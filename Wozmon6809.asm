@@ -71,7 +71,7 @@ aciad       equ  $e009      ; 6850 ACIA data register
 
 ; Use these lines to run from a 16K ROM
             org  $c000
-            ds.b $fee0-*, $ff
+            fcb $fee0-* dup($ff)
 
 
 reset:      lda  #3         ; Reset ACIA
