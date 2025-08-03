@@ -128,9 +128,8 @@ nextchar:                   ; Wait for key press
             andcc  #$EF      ; Clear the I bit in CC to ENABLE IRQ
             BEQ  nextchar    ; loop if no new characters
             ldx  kb_rptr     ; get the keyboard read pointer address
-            ldy  kb_buffer   ; get the keyboard buffer address
-            addr y,x         ; add the buffer address to the pointer store in x register
-            lda  ,x           ; get the character being pointed to by the keyboard pointer
+            leay  kb_buffer,x   ; add offset pointer to the keyboard buffer address
+            lda  ,y           ; get the character being pointed to by the keyboard pointer
 
             ora  #$80       ; Convert to high ASCII.
             sta  ,x         ; Add to text buffer.
