@@ -187,7 +187,8 @@ shifted_key:
 
 push_key:
             ldx kb_wptr
-            sta kb_buffer, x
+            leay kb_buffer, x
+            sta ,y
             inc kb_wptr
             jmp exit
 
