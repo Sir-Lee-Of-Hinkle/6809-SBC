@@ -139,15 +139,15 @@ nextchar:                   ; Wait for key press
 
 ; IRQ vector points here
 keyboard_interrupt:
-            pha
-            txa
-            pha
+            pshs a
+            tfr  x,a
+            pshs a
             lda kb_flags
             anda #RELEASE   ; check if we're releasing a key
             beq read_key    ; otherwise, read the key
 
             lda kb_flags
-            eor #RELEASE    ; flip the releasing bit
+            eora #RELEASE    ; flip the releasing bit
             sta kb_flags
             lda KBD         ; read key value that's being released
             cmpa #$12       ; left shift
@@ -171,16 +171,18 @@ read_key:
             cmpa #$59        ; right shift
             beq shift_down
 
-            tax
+            tfr a,x
             lda kb_flags
             anda #SHIFT
             bne shifted_key
 
-            lda keymap, x   ; map to character code
+            ldx #keymap            
+            lda x           ; map to character code
             jmp push_key
 
 shifted_key:
-            lda keymap_shifted, x   ; map to character code
+            ldx #keymap_shifted
+            lda x   ; map to character code
 
 push_key:
             ldx kb_wptr
@@ -201,7 +203,7 @@ key_release:
 
 exit:
             puls a
-            tax
+            tfr a,x
             puls a
             rti
 
@@ -254,7 +256,7 @@ hexshift:   asla            ; Hex digit left, MSB to carry.
             inc  inptr+1    ; Advance text index.
             bra  nexthex    ; Always taken. Check next character for hex.
 
-nothex:     cpx  ysav       ; Check if L, H empty (no hex digits).
+nothex:     cmpx  ysav       ; Check if L, H empty (no hex digits).
             beq  escape     ; Yes, generate ESC sequence.
             tst  mode       ; Test MODE byte.
             bpl  notstor    ; B6=0 for STOR, 1 for XAM and BLOCK XAM
@@ -319,7 +321,7 @@ prdata:     lda  #$a0       ; Blank.
 
 xamnext:    clr  mode       ; 0->MODE (XAM mode).
             ldx  xam        ; Compare 'examine index' to hex data.
-            cpx  h
+            cmpx  h
             beq  tonextitem ; Not less, so more data to output.
             leax 1,x
             stx  xam
@@ -365,7 +367,6 @@ keymap_shifted:
 ; Below is only needed if you want to run from ROM as a standalone
 ; monitor.
 
-            fill $ff, $fff0-*
 ;           org  $fff0      ; vector table
 
             fdb  $0000      ; Reserved
