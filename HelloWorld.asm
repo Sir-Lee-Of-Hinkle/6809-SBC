@@ -18,6 +18,8 @@ reset:
   lda #$55
   sta [$1000]
   
+  lda #AA
+  sta > #$5000
   
   ; --- Configure Port D ---
   LDA #$00
