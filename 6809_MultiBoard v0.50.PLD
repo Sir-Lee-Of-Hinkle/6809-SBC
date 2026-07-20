@@ -1,0 +1,77 @@
+Name     6809_Select;
+PartNo   00;
+Date     11-Jul-2026;
+Revision 01;
+Designer Lee Pannell;
+Company  This One Works;
+Assembly None;
+Location Any;
+Device ATF20V8B;
+
+
+/* Pin Map
+	----------
+RW	|1	24| Vcc
+E	|2	23| A2
+A15	|3	22| PIA1
+A14	|4	21| PIA2 
+A13	|5	20| ROM
+A12	|6	19| RAMCS
+A11	|7	18| RAMOE
+A10	|8	17| ACIA
+A9	|9	16| A3
+A8	|10	15| A4
+A7	|11	14| A5
+Gnd	|12	13| A6
+	----------     
+*/
+
+/*
+ * Inputs: 
+*/
+Pin 1 = RW;		/* Read = 1, Write = 0 */
+Pin 2 = E;
+Pin 3 = A15;
+Pin 4 = A14;
+Pin 5 = A13;
+Pin 6 = A12;
+Pin 7 = A11;
+Pin 8 = A10;
+Pin 9 = A9;
+Pin 10 = A8;
+Pin 11 = A7;
+Pin 13 = A6;
+Pin 14 = A5;
+Pin 15 = A4;
+Pin 16 = A3;
+Pin 23 = A2;
+
+/*
+ * Outputs:
+*/
+Pin 22 = PIA1;    /* 1 = PIA1 Enable */
+Pin 21 = PIA2;    /* 1 = PIA2 Enable */
+Pin 20 = ROM;    /* 0 = ROM Write Enable */
+Pin 19 = RAMWE;  /* 0 = RAM Write Enable */
+Pin 18 = RAMOE;  /* 0 = RAM Output Enable */
+Pin 17 = ACIA;   /* For Future use */
+
+/*
+ * Logic:
+ * PIA 1 controls LCD					Address: 0xFE04-0xFE07
+ * PIA 2 handles keyboard				Address: 0xFE00-0xFE03
+ * ACIA handles RS-232 Communications   Address: 0xFE08-0XFE0B
+*/
+
+IO_EN = A15 & A14 & A13 & A12 & A11 & A10 & A9 & !A8;
+PIA1 = IO_EN & !A7 & !A6 & !A5 & !A4 & !A3 & !A2;    /* 0xFE00 - 0xFE03 */
+PIA2 = IO_EN & !A7 & !A6 & !A5 & !A4 & !A3 & A2;     /* 0xFE04 - 0xFE07 */
+ACIA = IO_EN & !A7 & !A6 & !A5 & !A4 & A3;           /* 0xFE08 - 0xFE0F */
+
+ROM = !A15 # IO_EN;		/* ROM 0x8000-0xFFFF except 0xFE00-0xFE0F */
+
+RAMWE = RW;
+RAMOE = !(!A15 & E);
+
+
+
