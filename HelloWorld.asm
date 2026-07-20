@@ -1,79 +1,866 @@
-  org $8000
-; RAM 0x0000 - 0x7FFF
-; ROM 0x8000 - 0xDFFF
-; PIA1 0xE000 - 0xE003
-; PIA2 0xE004 - 0xE007
-; ACIA 0xE008 - 0xE00F
-; ROM 0xE010 - 0xFFFF
-PORTB = $E000
-PORTA = $E001
-DDRB = $E002
-DDRA = $E003
+PORTB = $7FF0
+PORTA = $7FF1
+DDRB = $7FF2
+DDRA = $7FF3
 
-PORTC = $E004
-PORTD = $E006
-PORTCCTL = $E005
-PORTDCTL = $E007
 E  = %10000000
 RW = %01000000
 RS = %00100000
 
-; ########### Program Start/Reset ##############
-reset:
-  ;lds #$7FFF      ; declare the system stack. it grows downward
+  org $8000
 
-; ########## Test Code #######
-  
-  ;lda #$55
-  ;sta [$1000]
-  
-  ;lda #AA
-  ;sta > #$5000
-  
-PIA1:
+reset:
+; ################ Initialize the PIA ##############
   lda #%11111111 ; Set all pins on port B to output
   sta DDRB
 
-  lda #%00000000 ; Set all pins on port A to input
+  lda #%11100000 ; Set top 3 pins on port A to output
   sta DDRA
-  
-PIA2:
-  ; --- Configure Port C ---
-  ;LDA #$00
-  ;STA PORTCCTL           ; Control register to Direction
 
-  ;LDA #$00
-  ;STA PORTC              ; Set all to input
+; ################ Initialize the LCD ##############
+  lda #%00111000 ; Set 8-bit mode; 2-line display; 5x8 font
+  sta PORTB
+  lda #0         ; Clear RS/RW/E bits
+  sta PORTA
+  lda #E         ; Set E bit to send instruction
+  sta PORTA
+  lda #0         ; Clear RS/RW/E bits
+  sta PORTA
 
-  ;LDA #$04               ; #%00000111  CA1 low to high triggers IRQA
-  ;STA PORTCCTL           ; Control register to Data (bit 0-2 = 1)
+ ; ##### Wait until LCD is ready 4.1 ms 
+  lcdbusy1:
+  ldb #RW         ; Set Read Mode
+  stb PORTA
+  orb #E          ; Set E bit to send instruction
+  stb PORTA
+  ldb PORTB       ; Read the data pins
+  andb #%10000000
+  bne lcdbusy1
+
+  ldb #RW
+  stb PORTA
+  ldb #%11111111  ; Port B is output
+  stb DDRB
+
    
-  ; --- Configure Port D ---
-  ;LDA #$00
-  ;STA PORTDCTL           ; Control register to Direction
+  
+  lda #%00001110 ; Display on; cursor on; blink off
+  sta PORTB
+  lda #0         ; Clear RS/RW/E bits
+  sta PORTA
+  lda #E         ; Set E bit to send instruction
+  sta PORTA
+  lda #0         ; Clear RS/RW/E bits
+  sta PORTA
 
-  ;LDA #$FF
-  ;STA PORTD              ; Set all to output
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
 
-  ;LDA #$04
-  ;STA PORTDCTL           ; Control register to Data (bit 2 = 1)
+  lda #%00000110 ; Increment and shift cursor; don't shift display
+  sta PORTB
+  lda #0         ; Clear RS/RW/E bits
+  sta PORTA
+  lda #E         ; Set E bit to send instruction
+  sta PORTA
+  lda #0         ; Clear RS/RW/E bits
+  sta PORTA
 
+
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  
+  lda #%00000001 ; Display Clear
+  sta PORTB
+  lda #0         ; Clear RS/RW/E bits
+  sta PORTA
+  lda #E         ; Set E bit to send instruction
+  sta PORTA
+  lda #0         ; Clear RS/RW/E bits
+  sta PORTA
+  
+  
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  
+  lda #$48	;"H"
+  sta PORTB
+  lda #RS         ; Set RS; Clear RW/E bits
+  sta PORTA
+  ora #E   	  ; Set E bit to send instruction
+  sta PORTA
+  lda #RS         ; Clear E bits
+  sta PORTA
+
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+
+
+  lda #$65	;"e"
+  sta PORTB
+  lda #RS         ; Set RS; Clear RW/E bits
+  sta PORTA
+  ora #E   	  ; Set E bit to send instruction
+  sta PORTA
+  lda #RS         ; Clear E bits
+  sta PORTA
+
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+
+
+  lda #$6C	;"l"
+  sta PORTB
+  lda #RS         ; Set RS; Clear RW/E bits
+  sta PORTA
+  ora #E   	  ; Set E bit to send instruction
+  sta PORTA
+  lda #RS         ; Clear E bits
+  sta PORTA
+
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+
+
+  lda #$6C	;"l"
+  sta PORTB
+  lda #RS         ; Set RS; Clear RW/E bits
+  sta PORTA
+  ora #E   	  ; Set E bit to send instruction
+  sta PORTA
+  lda #RS         ; Clear E bits
+  sta PORTA
+
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+
+
+  lda #$6F	;"o"
+  sta PORTB
+  lda #RS         ; Set RS; Clear RW/E bits
+  sta PORTA
+  ora #E   	  ; Set E bit to send instruction
+  sta PORTA
+  lda #RS         ; Clear E bits
+  sta PORTA
+
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+
+
+  lda #$2C	;","
+  sta PORTB
+  lda #RS         ; Set RS; Clear RW/E bits
+  sta PORTA
+  ora #E   	  ; Set E bit to send instruction
+  sta PORTA
+  lda #RS         ; Clear E bits
+  sta PORTA
+
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+
+
+  lda #$20	;" "
+  sta PORTB
+  lda #RS         ; Set RS; Clear RW/E bits
+  sta PORTA
+  ora #E   	  ; Set E bit to send instruction
+  sta PORTA
+  lda #RS         ; Clear E bits
+  sta PORTA
+
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+
+
+  lda #$57	;"w"
+  sta PORTB
+  lda #RS         ; Set RS; Clear RW/E bits
+  sta PORTA
+  ora #E   	  ; Set E bit to send instruction
+  sta PORTA
+  lda #RS         ; Clear E bits
+  sta PORTA
+
+  jsr lcd_wait
+
+
+
+  lda #$6F	;"o"
+  sta PORTB
+  lda #RS         ; Set RS; Clear RW/E bits
+  sta PORTA
+  ora #E   	  ; Set E bit to send instruction
+  sta PORTA
+  lda #RS         ; Clear E bits
+  sta PORTA
+
+  jsr lcd_wait
+
+
+
+  lda #$72	;"r"
+  sta PORTB
+  lda #RS         ; Set RS; Clear RW/E bits
+  sta PORTA
+  ora #E   	  ; Set E bit to send instruction
+  sta PORTA
+  lda #RS         ; Clear E bits
+  sta PORTA
+
+  jsr lcd_wait
+
+
+
+  lda #$6C	;"l"
+  jsr lcd_write_char
+  ;sta PORTB
+  ;lda #RS         ; Set RS; Clear RW/E bits
+  ;sta PORTA
+  ;ora #E   	  ; Set E bit to send instruction
+  ;sta PORTA
+  ;lda #RS         ; Clear E bits
+  ;sta PORTA
+
+  jsr lcd_wait
+
+
+
+  lda #$64	;"d"
+  jsr lcd_write_char
+  ;sta PORTB
+  ;lda #RS         ; Set RS; Clear RW/E bits
+  ;sta PORTA
+  ;ora #E   	  ; Set E bit to send instruction
+  ;sta PORTA
+  ;lda #RS         ; Clear E bits
+  ;sta PORTA
+
+  jsr lcd_wait
+
+
+
+  lda #$21	;"!"
+  jsr lcd_write_char
+  ;sta PORTB
+  ;lda #RS         ; Set RS; Clear RW/E bits
+  ;sta PORTA
+  ;ora #E   	  ; Set E bit to send instruction
+  ;sta PORTA
+  ;lda #RS         ; Clear E bits
+  ;sta PORTA
 
   lda #$55
-  ;ta PORTB
-  ;sta PORTD
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  
+  sta PORTA
   lda #$AA
   sta PORTB
-  ;sta PORTD
+
+
+loop:
+  
+  
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
+  nop
   nop
   nop
   nop
@@ -85,37 +872,49 @@ PIA2:
   nop
   nop
   
-  lda #$BB
+  
+  
+  jmp loop
+
+;#########################################################
+;############ LCD Subroutines
+;#########################################################
+
+lcd_write_char:
   sta PORTB
-  ;sta PORTD
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
+  lda #RS         ; Set RS; Clear RW/E bits
+  sta PORTA
+  ora #E   	      ; Set E bit to send instruction
+  sta PORTA
+  lda #RS         ; Clear E bits
+  sta PORTA
+
+  rts
+
+lcd_wait:
+  ldb #%00000000  ; Port B is input
+  stb DDRB
+lcdbusy:
+  ldb #RW         ; Set Read Mode
+  stb PORTA
+  orb #E          ; Set E bit to send instruction
+  stb PORTA
+  ldb PORTB       ; Read the data pins
+  andb #%10000000
+  bne lcdbusy
+
+  ldb #RW
+  stb PORTA
+  ldb #%11111111  ; Port B is output
+  stb DDRB
+
+  rts
+ 
+
+
+;#########################################################
+;############ General Subroutines
+;#########################################################
   
-  
-
-INIT:
-  nop
-  nop
-  nop
-  nop
-  nop
-  nop
-  jmp INIT
-
-
-;###########################################################
-;######## Setup misc. Vectors
-;###########################################################
-  org $FFF6
-  fdb $1212
-  fdb $1212
-  fdb $1212
-  fdb $8000               ; place reset vector
+  org $fffe
+  .word $8000
